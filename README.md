@@ -1,6 +1,6 @@
 # WorkBuddy AI Programming & Content Skills
 
-一套面向 AI 辅助编程与内容创作的 WorkBuddy 开源技能集。覆盖代码审查、提交信息、文档注释、测试生成、代码解释五大编程场景，以及图片/视频生成、网页与短视频转公众号文章、图片内嵌、去 AI 味等内容创作场景。
+一套面向 AI 辅助编程与内容创作的 WorkBuddy 开源技能集。覆盖代码审查、提交信息、文档注释、测试生成、代码解释五大编程场景，项目文档与发布（README/PR 描述/CHANGELOG）三大场景，以及图片/视频生成、网页与短视频转公众号文章、图片内嵌、去 AI 味等内容创作场景。
 
 ## 技能列表
 
@@ -13,6 +13,9 @@
 | [ai-docstring](./skills/ai-docstring/) | 自动生成代码文档注释（JSDoc/pydoc/JavaDoc/GoDoc等） | "add docs", "写注释", "生成文档" |
 | [ai-test-gen](./skills/ai-test-gen/) | 智能生成单元测试（Jest/pytest/JUnit/Go test等） | "write tests", "生成测试", "写测试用例" |
 | [ai-code-explainer](./skills/ai-code-explainer/) | 逐段解释复杂代码，生成结构化说明 | "explain this code", "这段代码是什么意思" |
+| [ai-readme-gen](./skills/ai-readme-gen/) | 扫描项目结构自动生成结构化 README | "写个README", "生成项目说明", "create a readme" |
+| [ai-pr-desc](./skills/ai-pr-desc/) | 从 git 上下文生成 Pull Request 描述 | "写个PR描述", "生成PR说明", "summarize my changes" |
+| [ai-changelog](./skills/ai-changelog/) | 解析 git 历史生成 CHANGELOG/发布说明 | "生成更新日志", "写CHANGELOG", "release notes" |
 
 ### 内容创作类
 
@@ -82,6 +85,30 @@ cp -r workbuddy-ai-programming-skills/skills/* ~/.workbuddy/skills/
 - 数据流、控制流、架构图
 - 根据受众水平自适应调整
 - 揭示设计意图和潜在问题
+
+### ai-readme-gen — 项目 README 生成
+
+- 先用 `scan_project.py` 扫描项目（目录树、语言分布、清单文件、入口点、是否已有 README），基于事实生成而非套模板
+- 自动识别技术栈：Node（`package.json`）/ Python（`pyproject.toml`/`requirements.txt`）/ Go（`go.mod`）/ Rust（`Cargo.toml`）
+- 安装与用法命令严格匹配检测到的栈，不臆造依赖
+- 支持中/英输出，输出结构：标题→特性→技术栈→安装→快速开始→项目结构→配置→API/CLI→测试→贡献/许可
+- 含 `scan_project.py`（仅用 Python 标准库，支持 `--depth` / `--json`）
+
+### ai-pr-desc — Pull Request 描述生成
+
+- 用 `gen_pr_context.py` 收集 git 上下文：当前分支、自动推断 base 分支、提交列表、diff stat、关联 issue（#123 / Closes #456）、Conventional Commits 类型分布
+- 按类型分组（feat→Features、fix→Fixes、refactor→Changed…）生成标准 PR 模板：Summary / Changes / Test plan / Checklist
+- 带具体可执行的验证命令，不堆砌原始 diff
+- 不自动 push 或开 PR，除非用户明确要求
+- 含 `gen_pr_context.py`（仅用 Python 标准库，支持 `--base` / `--json`）
+
+### ai-changelog — CHANGELOG 生成
+
+- 用 `gen_changelog.py` 解析 git 历史，按 Conventional Commits 类型分组（feat→Added、fix→Fixed、perf→Performance、refactor/style→Changed、docs→Documentation、test→Tests、build/ci→Build、chore→Chore、revert→Reverted）
+- 自动从最新 git tag 起算（`--since`），或指定显式区间（`--range v1.0.0..v1.1.0`）
+- 输出 Keep a Changelog 风格片段，剥离 `type(scope):` 前缀并附短 commit hash
+- 支持写入文件（`--output`）或 JSON 预览（`--json`），仅前插不覆盖已有条目
+- 含 `gen_changelog.py`（仅用 Python 标准库）
 
 ### agnes-media-gen — Agnes AI 图片与视频生成
 
