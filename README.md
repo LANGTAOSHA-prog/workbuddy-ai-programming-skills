@@ -1,6 +1,6 @@
 # WorkBuddy AI Programming & Content Skills
 
-一套面向 AI 辅助编程与内容创作的 WorkBuddy 开源技能集。覆盖代码审查、提交信息、文档注释、测试生成、代码解释五大编程场景，项目文档与发布（README/PR 描述/CHANGELOG）三大场景，以及图片/视频生成、网页与短视频转公众号文章、图片内嵌、去 AI 味等内容创作场景。
+一套面向 AI 辅助编程与内容创作的 WorkBuddy 开源技能集。覆盖代码审查、提交信息、文档注释、测试生成、代码解释五大编程场景，项目文档与发布（README/PR 描述/CHANGELOG）三大场景，以及图片/视频生成、PDF/网页/短视频转公众号文章、文章翻译、社媒文案、图片内嵌、去 AI 味等内容创作场景。
 
 ## 技能列表
 
@@ -26,6 +26,9 @@
 | [web-to-article](./skills/web-to-article/) | 把任意网页转换为公众号风格文章，含 AI 配图与图片内嵌 | "转成公众号文章", "网页转文章", "convert to article" |
 | [wechat-img-embed](./skills/wechat-img-embed/) | 把文章 HTML 中的本地图片压缩并内嵌为 base64，便于复制粘贴到公众号 | "复制到公众号", "图片内嵌", "发布到公众号" |
 | [video-to-article](./skills/video-to-article/) | 读取短视频内容（平台链接/字幕文件）并改写成公众号图文 | "短视频转文章", "视频转公众号", "提取视频字幕写文章" |
+| [pdf-to-article](./skills/pdf-to-article/) | 抽取 PDF 正文改写成公众号文章，配图并内嵌 | "PDF转文章", "把文档改成公众号", "pdf to article" |
+| [translate-article](./skills/translate-article/) | Markdown 中英互译，保留代码块/链接/术语 | "翻译这篇文章", "中英互译", "translate this doc" |
+| [social-post-gen](./skills/social-post-gen/) | 把内容改写成小红书/微博/朋友圈文案 | "写个小红书文案", "生成微博", "朋友圈文案" |
 | [humanizer](./skills/humanizer/) | 去除 AI 写作痕迹，让文本更自然、更像人写 | "去AI味", "humanize", "去掉AI痕迹" |
 
 ## 安装
@@ -149,6 +152,26 @@ cp -r workbuddy-ai-programming-skills/skills/* ~/.workbuddy/skills/
 - 识别并消除 AI 写作常见模式（套话、空洞赞美、八股结构等）
 - 让文本更自然、有观点、像人写
 - 适用于改写、润色、降 AI 检测率
+
+### pdf-to-article — PDF 转公众号文章
+
+- 用 `extract_pdf.py` 抽取 PDF 正文（自动选后端 `pypdf` > `PyPDF2` > `pdfminer.six`，扫描件页会跳过提示）
+- 流程与 web/video-to-article 一致：抽取 → 改写公众号风格 → AI 配图 → `wechat-img-embed` 内嵌 base64
+- 支持页码范围（`--pages 1-5`）、输出文件或 JSON 元信息
+- 注意事项：扫描版 PDF 抽不到文字需换文本层/提供 OCR；表格公式需人工核对；注意版权
+
+### translate-article — 文章翻译（Markdown 中英互译）
+
+- 用 `translate_md.py` 的 `split` 把文章切成片段（标题/正文/代码块分类），`code` 块整体保留不翻译
+- 模型逐段翻译 `type != "code"` 的片段后，用 `join` 按 id 回填，结构与原文一一对应
+- 翻译纪律：代码、变量名、URL、API 名不译；术语前后一致；保留 Markdown 语法
+- 含 `translate_md.py`（`split` / `join` 子命令，仅用 Python 标准库）
+
+### social-post-gen — 社媒文案生成
+
+- 从「标题 + 要点」按平台套格式：`xhs`（emoji 钩子 + 列表 + 末尾 `#话题`）、`weibo`（短平快 + 内联 `#话题#` + 互动提问）、`moments`（口语化、无标签、更短）
+- 文案实质内容由模型撰写，脚本只做平台格式化、emoji、话题标签（支持 `--no-emoji`）
+- 含 `format_post.py`（仅用 Python 标准库，输入支持 `--input` brief 或 `--title` + `--bullets`）
 
 ## 技能结构
 
