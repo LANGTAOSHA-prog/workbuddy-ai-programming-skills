@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ARTICLE_TITLE}}</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f5f5f5;
+    color: #333;
+    line-height: 1.8;
+  }
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 0 0 40px 0;
+  }
+  .cover {
+    width: 100%;
+    display: block;
+  }
+  .content {
+    padding: 24px 20px;
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .meta {
+    font-size: 13px;
+    color: #999;
+    margin-bottom: 20px;
+  }
+  .intro {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-left: 3px solid #2db84d;
+    border-radius: 0 8px 8px 0;
+  }
+  h2 {
+    font-size: 19px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 28px 0 14px 0;
+  }
+  p {
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 14px;
+    line-height: 1.8;
+  }
+  strong {
+    color: #1a1a1a;
+  }
+  a {
+    color: #0366d6;
+    text-decoration: none;
+  }
+  .section-img {
+    width: 100%;
+    border-radius: 8px;
+    margin: 24px 0;
+  }
+  .card {
+    margin-bottom: 28px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .rank {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 700;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .rank-1 { background: #ffd700; color: #fff; }
+  .rank-2 { background: #c0c0c0; color: #fff; }
+  .rank-3 { background: #cd7f32; color: #fff; }
+  .rank-other { background: #e8e8e8; color: #666; }
+  .card-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #0366d6;
+  }
+  .card-desc {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 12px;
+    line-height: 1.7;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .tag-default { background: #f0f0f0; color: #666; }
+  .tag-stars { background: #fff3e0; color: #e65100; }
+  .tag-green { background: #e8f5e9; color: #2e7d32; }
+  .tag-blue { background: #e3f2fd; color: #1565c0; }
+  .tag-purple { background: #f3e5f5; color: #7b1fa2; }
+  .commentary {
+    font-size: 14px;
+    color: #666;
+    padding: 12px 16px;
+    background: #fafafa;
+    border-radius: 8px;
+    border-left: 3px solid #ddd;
+    line-height: 1.7;
+  }
+  blockquote {
+    margin: 16px 0;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-left: 3px solid #0366d6;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    color: #555;
+  }
+  code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: "SF Mono", "Fira Code", Consolas, monospace;
+  }
+  pre {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 16px 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+  }
+  .summary {
+    margin-top: 32px;
+    padding: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    color: #fff;
+  }
+  .summary h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+  .summary p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #fff;
+    opacity: 0.95;
+  }
+  .summary strong {
+    color: #fff;
+  }
+  .divider {
+    text-align: center;
+    margin: 32px 0;
+    color: #ccc;
+    font-size: 14px;
+    letter-spacing: 8px;
+  }
+  ul, ol {
+    padding-left: 20px;
+    margin-bottom: 14px;
+  }
+  li {
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 6px;
+    line-height: 1.7;
+  }
+  .footer {
+    text-align: center;
+    padding: 24px 20px;
+    font-size: 13px;
+    color: #999;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <!-- Cover Image -->
+  <img class="cover" src="cover.png" alt="Cover">
+
+  <div class="content">
+    <!-- Title -->
+    <h1>{{ARTICLE_TITLE}}</h1>
+    <div class="meta">{{DATE}} · {{SOURCE}}</div>
+
+    <!-- Intro -->
+    <div class="intro">
+      {{INTRO_TEXT}}
+    </div>
+
+    <!-- Content Sections -->
+    <!-- Repeat card blocks as needed -->
+    <div class="card">
+      <div class="card-header">
+        <span class="rank rank-1">1</span>
+        <span class="card-title">{{ITEM_TITLE}}</span>
+      </div>
+      <div class="card-desc">{{ITEM_DESCRIPTION}}</div>
+      <div class="tags">
+        <span class="tag tag-default">{{TAG_1}}</span>
+        <span class="tag tag-stars">{{TAG_2}}</span>
+        <span class="tag tag-green">{{TAG_3}}</span>
+      </div>
+      <div class="commentary">
+        <strong>点评：</strong>{{COMMENTARY_TEXT}}
+      </div>
+    </div>
+
+    <!-- Section Image (optional) -->
+    <img class="section-img" src="section.png" alt="Section illustration">
+
+    <!-- More cards... -->
+
+    <!-- Divider -->
+    <div class="divider">· · ·</div>
+
+    <!-- Summary -->
+    <div class="summary">
+      <h2>{{SUMMARY_TITLE}}</h2>
+      <p>{{SUMMARY_TEXT}}</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      {{FOOTER_TEXT}}
+    </div>
+  </div>
+</div>
+</body>
+</html>
