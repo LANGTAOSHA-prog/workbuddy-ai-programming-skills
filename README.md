@@ -1,6 +1,6 @@
 # WorkBuddy AI Programming & Content Skills
 
-一套面向 AI 辅助编程与内容创作的 WorkBuddy 开源技能集。覆盖代码审查、提交信息、文档注释、测试生成、代码解释五大编程场景，项目文档与发布（README/PR 描述/CHANGELOG）三大场景，以及图片/视频生成、PDF/网页/短视频转公众号文章、文章翻译、社媒文案、图片内嵌、去 AI 味等内容创作场景。
+一套面向 AI 辅助编程与内容创作的 WorkBuddy 开源技能集。覆盖代码审查、提交信息、文档注释、测试生成、代码解释五大编程场景，项目文档与发布（README/PR 描述/CHANGELOG）三大场景，编程工作流（重构/报错诊断/架构图）三大场景，以及图片/视频生成、PDF/网页/短视频转公众号文章、文章翻译、社媒文案、图片内嵌、去 AI 味等内容创作场景。
 
 ## 技能列表
 
@@ -16,6 +16,14 @@
 | [ai-readme-gen](./skills/ai-readme-gen/) | 扫描项目结构自动生成结构化 README | "写个README", "生成项目说明", "create a readme" |
 | [ai-pr-desc](./skills/ai-pr-desc/) | 从 git 上下文生成 Pull Request 描述 | "写个PR描述", "生成PR说明", "summarize my changes" |
 | [ai-changelog](./skills/ai-changelog/) | 解析 git 历史生成 CHANGELOG/发布说明 | "生成更新日志", "写CHANGELOG", "release notes" |
+
+### 编程工作流类
+
+| 技能 | 功能 | 触发词 |
+|------|------|--------|
+| [ai-refactor](./skills/ai-refactor/) | 定位代码味道并给出安全重构方案（提取/早返回/参数对象等） | "重构这段代码", "代码味道", "refactor this function" |
+| [ai-debug](./skills/ai-debug/) | 解析 Python/JS/Java 堆栈，定位根因并给修复 | "报错了", "帮我看下堆栈", "debug this error" |
+| [ai-diagram](./skills/ai-diagram/) | 从代码或描述生成架构图/流程图/类图（Mermaid） | "画个架构图", "生成流程图", "draw a diagram" |
 
 ### 内容创作类
 
@@ -112,6 +120,30 @@ cp -r workbuddy-ai-programming-skills/skills/* ~/.workbuddy/skills/
 - 输出 Keep a Changelog 风格片段，剥离 `type(scope):` 前缀并附短 commit hash
 - 支持写入文件（`--output`）或 JSON 预览（`--json`），仅前插不覆盖已有条目
 - 含 `gen_changelog.py`（仅用 Python 标准库）
+
+### ai-refactor — 智能重构
+
+- 用 `analyze_smells.py` 静态扫描（Python 用 `ast`、JS/TS 用正则），定位函数过长/参数过多/嵌套过深/圈复杂度偏高
+- 按指标映射到具体手法：提取函数、引入参数对象、卫语句（早返回）、表驱动、策略模式
+- 强调「小步、可测试、行为不变」，先给方案再小范围落补丁
+- 可结合 `ai-test-gen` 先补测试守住行为，结合 `ai-code-review` 形成 review→refactor 闭环
+- 含 `analyze_smells.py`（仅用 Python 标准库）
+
+### ai-debug — 报错与堆栈诊断
+
+- 用 `parse_traceback.py` 自动识别 Python / Node.js / Java 三种堆栈，结构化输出错误类型、出错点与调用链
+- 按出错点分类（空值/越界/类型/并发/资源/配置），给出根因假设与最小止血 + 根治方案
+- 支持文件或管道输入（`cat trace.txt | python3 parse_traceback.py -`），可输出 JSON
+- 反模式提醒：不瞎猜、不吞异常、不泄露敏感信息
+- 含 `parse_traceback.py`（仅用 Python 标准库）
+
+### ai-diagram — 架构与流程图生成
+
+- 用 `gen_mermaid.py` 三种模式：`module`（扫描代码库抽模块依赖图）、`flow`（步骤串流程图，支持中文）、`class`（类描述转类图）
+- 自动识别 Py/JS/TS 的 import 关系，输出标准 Mermaid，可直接贴进 Markdown
+- 覆盖 flowchart / classDiagram / sequenceDiagram 常见写法速记
+- 建议分层画图（顶层组件图 → 展开关键子图），避免一张巨图
+- 含 `gen_mermaid.py`（仅用 Python 标准库）
 
 ### agnes-media-gen — Agnes AI 图片与视频生成
 
