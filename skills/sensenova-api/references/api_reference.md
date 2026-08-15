@@ -13,7 +13,7 @@
 
 ## 模型列表
 
-### sensenova-6.7-flash-lite
+### sensenova-6.8-flash-lite
 
 | 属性 | 值 |
 |------|-----|
@@ -27,6 +27,8 @@
 | 支持功能 | 工具调用、JSON 输出、流式 |
 | 默认温度 | 0.6 |
 
+> 兼容性：即日起至 8 月 31 日，旧模型 `sensenova-6.7-flash-lite` 的调用会自动重定向至 `sensenova-6.8-flash-lite`，建议新调用直接使用 6.8。
+
 ### deepseek-v4-flash
 
 | 属性 | 值 |
@@ -38,6 +40,19 @@
 | 最大输出 | 65,536 tokens |
 | 调用限制 | 每 5 小时 500 次 |
 | 支持功能 | 工具调用、JSON 输出、流式、思考模式 |
+| 默认温度 | 1.0 |
+
+### glm-5.2
+
+| 属性 | 值 |
+|------|-----|
+| 类型 | 旗舰文本模型（智谱） |
+| 输入模态 | 文本 |
+| 输出模态 | 文本 |
+| 上下文长度 | 1M tokens |
+| 最大输出 | 128K tokens (131,072) |
+| 调用限制 | 每 5 小时 500 次 |
+| 支持功能 | 长文写作、1M 无损上下文 |
 | 默认温度 | 1.0 |
 
 ### sensenova-u1-fast
@@ -86,7 +101,7 @@ POST https://token.sensenova.cn/v1/chat/completions
   "id": "chatcmpl-xxx",
   "object": "chat.completion",
   "created": 1713167890,
-  "model": "sensenova-6.7-flash-lite",
+  "model": "sensenova-6.8-flash-lite",
   "choices": [{
     "index": 0,
     "message": {
@@ -104,6 +119,8 @@ POST https://token.sensenova.cn/v1/chat/completions
   }
 }
 ```
+
+> ⚠️ **实测注意（重要）**：`sensenova-6.8-flash-lite` 是推理模型，其**同步返回的 `message` 里没有 `content` 字段**，正文（含思考过程与最终答案）全部位于 `reasoning` 字段。文档示例中的 `content` 与实际不符。客户端应优先读取 `content`，为空时回退到 `reasoning`，否则会得到空回复。`chat.py` 已按此逻辑处理。
 
 **finish_reason**: `stop` / `length` / `tool_calls` / `content_filter`
 
@@ -141,7 +158,7 @@ POST https://token.sensenova.cn/v1/messages
     {"type": "thinking", "thinking": "推理过程"},
     {"type": "text", "text": "最终回复"}
   ],
-  "model": "sensenova-6.7-flash-lite",
+  "model": "sensenova-6.8-flash-lite",
   "stop_reason": "end_turn",
   "usage": {"input_tokens": 46, "output_tokens": 216}
 }
@@ -215,17 +232,17 @@ GET https://token.sensenova.cn/v1/models
 # 基础对话
 curl https://token.sensenova.cn/v1/chat/completions \
   -H "Authorization: Bearer $SENSENOVA_API_KEY" \
-  -d '{"model":"sensenova-6.7-flash-lite","messages":[{"role":"user","content":"Hello"}]}'
+  -d '{"model":"sensenova-6.8-flash-lite","messages":[{"role":"user","content":"Hello"}]}'
 
 # 图像输入
 curl https://token.sensenova.cn/v1/chat/completions \
   -H "Authorization: Bearer $SENSENOVA_API_KEY" \
-  -d '{"model":"sensenova-6.7-flash-lite","messages":[{"role":"user","content":[{"type":"text","text":"看图"},{"type":"image_url","image_url":{"url":"https://img.png"}}]}]}'
+  -d '{"model":"sensenova-6.8-flash-lite","messages":[{"role":"user","content":[{"type":"text","text":"看图"},{"type":"image_url","image_url":{"url":"https://img.png"}}]}]}'
 
 # 工具调用
 curl https://token.sensenova.cn/v1/chat/completions \
   -H "Authorization: Bearer $SENSENOVA_API_KEY" \
-  -d '{"model":"sensenova-6.7-flash-lite","messages":[{"role":"user","content":"上海天气？"}],"tools":[{"type":"function","function":{"name":"get_weather","parameters":{"type":"object","properties":{"city":{"type":"string"}},"required":["city"]}}}]}'
+  -d '{"model":"sensenova-6.8-flash-lite","messages":[{"role":"user","content":"上海天气？"}],"tools":[{"type":"function","function":{"name":"get_weather","parameters":{"type":"object","properties":{"city":{"type":"string"}},"required":["city"]}}}]}'
 
 # 思考模式
 curl https://token.sensenova.cn/v1/chat/completions \
@@ -245,12 +262,12 @@ curl https://token.sensenova.cn/v1/images/generations \
 # 流式
 curl https://token.sensenova.cn/v1/chat/completions \
   -H "Authorization: Bearer $SENSENOVA_API_KEY" \
-  -d '{"model":"sensenova-6.7-flash-lite","messages":[{"role":"user","content":"Hello"}],"stream":true}'
+  -d '{"model":"sensenova-6.8-flash-lite","messages":[{"role":"user","content":"Hello"}],"stream":true}'
 
 # Anthropic 兼容
 curl https://token.sensenova.cn/v1/messages \
   -H "Authorization: Bearer $SENSENOVA_API_KEY" \
-  -d '{"model":"sensenova-6.7-flash-lite","max_tokens":1024,"messages":[{"role":"user","content":"Hello"}]}'
+  -d '{"model":"sensenova-6.8-flash-lite","max_tokens":1024,"messages":[{"role":"user","content":"Hello"}]}'
 
 # 模型列表
 curl https://token.sensenova.cn/v1/models \

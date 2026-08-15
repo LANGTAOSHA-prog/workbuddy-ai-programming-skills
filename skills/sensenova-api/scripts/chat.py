@@ -3,11 +3,12 @@
 chat.py — SenseNova Chat Completions (OpenAI compatible).
 
 Usage:
-    python chat.py --model sensenova-6.7-flash-lite --prompt "Hello"
-    python chat.py --model sensenova-6.7-flash-lite --prompt "看图" --image img.png
+    python chat.py --model sensenova-6.8-flash-lite --prompt "Hello"
+    python chat.py --model sensenova-6.8-flash-lite --prompt "看图" --image img.png
     python chat.py --model deepseek-v4-flash --prompt "9.11vs9.8" --reasoning high
     python chat.py --model deepseek-v4-flash --prompt "列三种语言" --json-mode
-    python chat.py --model sensenova-6.7-flash-lite --prompt "Hi" --stream
+    python chat.py --model glm-5.2 --prompt "写一份长文分析"
+    python chat.py --model sensenova-6.8-flash-lite --prompt "Hi" --stream
 """
 
 import argparse
@@ -21,8 +22,9 @@ BASE_URL = "https://token.sensenova.cn/v1"
 API_KEY_ENV = "SENSENOVA_API_KEY"
 
 DEFAULTS = {
-    "sensenova-6.7-flash-lite": {"temperature": 0.6, "max_tokens": 65536},
+    "sensenova-6.8-flash-lite": {"temperature": 0.6, "max_tokens": 65536},
     "deepseek-v4-flash": {"temperature": 1.0, "max_tokens": 65536},
+    "glm-5.2": {"temperature": 1.0, "max_tokens": 131072},
 }
 
 
@@ -105,13 +107,22 @@ def call_chat(model, messages, stream=False, reasoning_effort=None, json_mode=Fa
     result = json.loads(body)
     choice = result.get("choices", [{}])[0]
     msg = choice.get("message", {})
-    content = msg.get("content", "")
-    reasoning = msg.get("reasoning_content", "")
+    raw_content = msg.get("content")
+    reasoning_content = msg.get("reasoning_content")
+    reasoning_legacy = msg.get("reasoning")
+    # 正文优先用 content；sensenova-6.8-flash-lite 等推理模型把正文放在 reasoning 字段
+    if raw_content:
+        content = raw_content
+    elif reasoning_legacy:
+        content = reasoning_legacy
+    else:
+        content = ""
     finish = choice.get("finish_reason", "")
     usage = result.get("usage", {})
 
-    if reasoning:
-        print(f"[Thinking]\n{reasoning}\n")
+    # 仅当存在独立的思考字段时才打印 Thinking 块，避免与正文重复
+    if reasoning_content and reasoning_content != content:
+        print(f"[Thinking]\n{reasoning_content}\n")
     print(content)
     if finish != "stop":
         print(f"\n[finish_reason: {finish}]", file=sys.stderr)
@@ -121,7 +132,7 @@ def call_chat(model, messages, stream=False, reasoning_effort=None, json_mode=Fa
 
 def main():
     parser = argparse.ArgumentParser(description="SenseNova Chat Completions")
-    parser.add_argument("--model", default="sensenova-6.7-flash-lite", help="Model ID")
+    parser.add_argument("--model", default="sensenova-6.8-flash-lite", help="Model ID (sensenova-6.8-flash-lite, deepseek-v4-flash, glm-5.2)")
     parser.add_argument("--prompt", "-p", required=True, help="User prompt")
     parser.add_argument("--image", "-i", help="Image file path or URL for multimodal input")
     parser.add_argument("--stream", "-s", action="store_true", help="SSE stream output")

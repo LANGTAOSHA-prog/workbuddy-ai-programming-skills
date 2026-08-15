@@ -4,8 +4,9 @@
 
 | Model | 限制 | 备注 |
 |-------|------|------|
-| `sensenova-6.7-flash-lite` | 每 5 小时 1500 次 | 多模态智能体 |
+| `sensenova-6.8-flash-lite` | 每 5 小时 1500 次 | 多模态智能体 |
 | `deepseek-v4-flash` | 每 5 小时 500 次 | 高性能推理 |
+| `glm-5.2` | 每 5 小时 500 次 | 旗舰文本模型 |
 | `sensenova-u1-fast` | 每 5 小时 1500 次 | 图片生成 |
 
 当超过限制时，API 返回 HTTP 429 `quota_exceeded_error`。
@@ -26,8 +27,8 @@
 
 ## 限制说明
 
-- 上下文长度：sensenova-6.7-flash-lite 256K tokens，deepseek-v4-flash 1M tokens
-- 最大输出：两者均为 65,536 tokens
+- 上下文长度：sensenova-6.8-flash-lite 256K tokens，deepseek-v4-flash / glm-5.2 1M tokens
+- 最大输出：6.8 Flash-Lite / DeepSeek 65,536 tokens，glm-5.2 128K (131,072) tokens
 - 单次并发请求数：未明确限制，超出配额返回 429
 - 图片 URL 有效期：1 小时，到期后链接失效
 

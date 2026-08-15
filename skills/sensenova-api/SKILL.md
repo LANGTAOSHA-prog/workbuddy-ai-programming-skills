@@ -1,6 +1,6 @@
 ---
 name: sensenova-api
-description: "Access SenseNova (日日新) API for text chat, image generation, and multimodal understanding. Supports three models: sensenova-6.7-flash-lite (multimodal agent, text+image→text), sensenova-u1-fast (infographic/image generation), and deepseek-v4-flash (reasoning, 1M context). Uses OpenAI-compatible Chat Completions, Anthropic-compatible Messages API, and a dedicated Images endpoint. Requires SENSENOVA_API_KEY environment variable."
+description: "Access SenseNova (日日新) API for text chat, image generation, and multimodal understanding. Supports four models: sensenova-6.8-flash-lite (multimodal agent, text+image→text, 256K context), sensenova-u1-fast (infographic/image generation), deepseek-v4-flash (reasoning, 1M context), and glm-5.2 (flagship text model, 1M context, 128K output). Uses OpenAI-compatible Chat Completions, Anthropic-compatible Messages API, and a dedicated Images endpoint. Requires SENSENOVA_API_KEY environment variable."
 triggers:
   - "用日日新"
   - "用SenseNova"
@@ -20,13 +20,16 @@ triggers:
 
 ```
 用户: 用SenseNova帮我分析这张图片：xxx
-→ 用 chat.py 调用 sensenova-6.7-flash-lite（支持图像输入）
+→ 用 chat.py 调用 sensenova-6.8-flash-lite（支持图像输入）
 
 用户: 用SenseNova生成一张信息图
 → 用 image_gen.py 调用 sensenova-u1-fast
 
 用户: 用SenseNova思考一下这个数学题
 → 用 chat.py 调用 deepseek-v4-flash，开启 reasoning_effort
+
+用户: 用SenseNova写一份长文分析
+→ 用 chat.py 调用 glm-5.2（1M 上下文，128K 输出）
 ```
 
 ## Prerequisites
@@ -42,16 +45,17 @@ triggers:
 
 | Model ID | 类型 | 输入 | 输出 | 上下文 | 特性 |
 |----------|------|------|------|--------|------|
-| `sensenova-6.7-flash-lite` | 多模态智能体 | 文本 + 图片 | 文本 | 256K | 工具调用、JSON 输出、流式 |
+| `sensenova-6.8-flash-lite` | 多模态智能体 | 文本 + 图片 | 文本 | 256K | 工具调用、JSON 输出、流式 |
 | `sensenova-u1-fast` | 信息图生成 | 文本 | 图片 | — | 11 种尺寸比例 |
 | `deepseek-v4-flash` | 高性能推理 | 文本 | 文本 | 1M | 思考模式、工具调用、JSON |
+| `glm-5.2` | 旗舰文本模型 | 文本 | 文本 | 1M | 128K 最大输出、长文写作 |
 
 ## Endpoints
 
 | 端点 | 方法 | 模型 | 说明 |
 |------|------|------|------|
-| `/v1/chat/completions` | POST | Flash-Lite, DeepSeek | OpenAI 兼容对话 |
-| `/v1/messages` | POST | Flash-Lite, DeepSeek | Anthropic 兼容对话 |
+| `/v1/chat/completions` | POST | 6.8 Flash-Lite, DeepSeek, GLM-5.2 | OpenAI 兼容对话 |
+| `/v1/messages` | POST | 6.8 Flash-Lite, DeepSeek, GLM-5.2 | Anthropic 兼容对话 |
 | `/v1/images/generations` | POST | U1 Fast | 图像生成 |
 | `/v1/models` | GET | 所有 | 模型列表查询 |
 
@@ -61,12 +65,12 @@ triggers:
 
 ```bash
 python scripts/chat.py \
-  --model sensenova-6.7-flash-lite \
+  --model sensenova-6.8-flash-lite \
   --prompt "介绍一下商汤科技"
 
 # 图像输入
 python scripts/chat.py \
-  --model sensenova-6.7-flash-lite \
+  --model sensenova-6.8-flash-lite \
   --prompt "图片里面有什么" \
   --image https://example.com/image.png
 
@@ -101,7 +105,7 @@ python scripts/image_gen.py \
 | `model` | ✅ | 模型 ID |
 | `messages` | ✅ | 消息列表 |
 | `stream` | ❌ | 流式输出 |
-| `temperature` | ❌ | 0-2，默认 0.6 (Flash-Lite) / 1 (DeepSeek) |
+| `temperature` | ❌ | 0-2，默认 0.6 (6.8 Flash-Lite) / 1 (DeepSeek, GLM-5.2) |
 | `max_tokens` | ❌ | 最大输出 token 数 |
 | `reasoning_effort` | ❌ | deepseek 专用：low/medium/high/none |
 | `response_format` | ❌ | `{"type":"json_object"}` 启用 JSON |
@@ -124,9 +128,10 @@ python scripts/image_gen.py \
 
 | Model | 限制 |
 |-------|------|
-| `sensenova-6.7-flash-lite` | 每 5 小时 1500 次 |
+| `sensenova-6.8-flash-lite` | 每 5 小时 1500 次 |
 | `sensenova-u1-fast` | 每 5 小时 1500 次 |
 | `deepseek-v4-flash` | 每 5 小时 500 次 |
+| `glm-5.2` | 每 5 小时 500 次 |
 
 ## Error Handling
 
